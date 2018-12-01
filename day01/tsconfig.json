@@ -1,0 +1,11 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "noImplicitAny" : true,
+        "strictNullChecks": true,
+        "lib":[
+            "esnext"
+        ],
+        "target": "esnext"
+    }
+  }
