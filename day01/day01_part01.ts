@@ -9,7 +9,7 @@ var filepath = path.join(__dirname, "./day01_part01_input.txt");
 var text = fs.readFileSync(filepath, "utf-8");
 changes = text.split("\r\n");
 
-var newValue: number;
+var newValue: number = 0;
 var tmpValue: string;
 var operator: string;
 
