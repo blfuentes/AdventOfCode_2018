@@ -1,0 +1,11 @@
+{
+    "name": "adventofcode",
+    "version": "0.1.0",
+    "private": "false",
+    "devDependencies": {},
+    "dependencies": {
+        "@types/node": "^10.12.11",
+        "ts-node": "^7.0.1",
+        "typescript": "^3.2.1"
+    }
+}

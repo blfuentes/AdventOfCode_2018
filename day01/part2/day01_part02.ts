@@ -1,24 +1,24 @@
-var fs = require("fs");
-var path = require('path');
+let fs = require("fs");
+let path = require('path');
 
-var changes = [];
-var result: number = 0;
+let changes = [];
+let result: number = 0;
 
-var filepath = path.join(__dirname, "./day01_part01_input.txt");
+let filepath = path.join(__dirname, "../day01_part01_input.txt");
 // var filepath = path.join(__dirname, "./test02.txt");
 // var filepath = path.join(__dirname, "./test03.txt");
 // var filepath = path.join(__dirname, "./test04.txt");
 
-var text = fs.readFileSync(filepath, "utf-8");
-changes = text.split("\r\n");
+let text = fs.readFileSync(filepath, "utf-8");
+changes = text.split("\n");
 
 let newValue2: number = 0;
-var tmpValue: string;
-var operator: string;
+let tmpValue: string;
+let operator: string;
 let calculatedFrecuencies: number[] = [];
 
 let duplicatedFound: boolean = false;
-
+let numberofloops = 0;
 do {
     for (let value of changes) {
         operator = value.charAt(0);
@@ -40,5 +40,6 @@ do {
             break;
         }
     }
+    numberofloops++;
 } while (!duplicatedFound);
-console.log(`Final value: ${result}. Duplicated frecuency: ${newValue2}.`);
+console.log(`Final value: ${result}. Duplicated frecuency: ${newValue2}. Loops: ${numberofloops}.`);

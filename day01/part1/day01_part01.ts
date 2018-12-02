@@ -4,7 +4,7 @@ var path = require('path');
 var changes = [];
 var result: number = 0;
 
-var filepath = path.join(__dirname, "./day01_part01_input.txt");
+var filepath = path.join(__dirname, "../day01_part01_input.txt");
 
 var text = fs.readFileSync(filepath, "utf-8");
 changes = text.split("\r\n");
