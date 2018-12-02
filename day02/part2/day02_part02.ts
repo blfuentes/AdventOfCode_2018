@@ -86,7 +86,7 @@ for (var idx = 0; idx < entries.length; idx++) {
         var cdifferences = 0;    
         var issimilar = true;    
         let result: string = "";
-        for (var kdx = 0; kdx < tmpEntry.entryValue.length && cdifferences < 2; kdx++) {
+        for (var kdx = 0; kdx < tmpEntry.entryValue.length; kdx++) {
             if (tmpEntry.entryValue[kdx] !== entryToCompare.entryValue[kdx]) {
                 cdifferences++;
             } else {
