@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="day01\test02.txt" />
+    <Compile Include="day01\part02\day01_part02.fs" />
+    <None Include="day01\part02\day01_part02.fsx" />
+    <Content Include="day01\day01_part01_input.txt" />
+    <None Include="day01\part01\day01_part01.fsx" />
+    <Compile Include="day01\part01\day01_part01.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>
