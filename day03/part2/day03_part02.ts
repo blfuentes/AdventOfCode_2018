@@ -34,16 +34,11 @@ for (let claim of claimsList) {
             if (baseSquare[cidx][cjdx] === ".") {
                 baseSquare[cidx][cjdx] = claim.id.toString();
             } else {
+                if (baseSquare[cidx][cjdx] !== "X") {
+                    squareInches++;
+                }
                 baseSquare[cidx][cjdx] = "X";
             }
-        }
-    }
-}
-
-for (var idx = 0; idx <  baseSquare.length; idx++) {
-    for (var jdx = 0; jdx < baseSquare.length; jdx++) {
-        if (baseSquare[idx][jdx] === "X") {
-            squareInches++;
         }
     }
 }
