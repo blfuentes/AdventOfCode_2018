@@ -11,8 +11,16 @@
     <None Include="day01\part02\day01_part02.fsx" />
     <Content Include="day01\day01_part01_input.txt" />
     <None Include="day01\part01\day01_part01.fsx" />
+    <Content Include="day02\part01\test01.txt" />
+    <Compile Include="day02\part01\day02_part01.fs" />
+    <None Include="day02\part01\day02_part01.fsx" />
     <Compile Include="day01\part01\day01_part01.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="day02\day02_input.txt" />
+    <Folder Include="day02\part02\" />
   </ItemGroup>
 
 </Project>
