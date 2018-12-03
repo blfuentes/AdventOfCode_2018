@@ -15,14 +15,14 @@ for (let entry of entryElements) {
 }
 
 let baseSquare: Array<Array<number>>;
-
-baseSquare = new Array(1000);
-for (var idx = 0; idx < baseSquare.length; idx++) {
-    baseSquare[idx] = new Array(1000);
-    for (var jdx = 0; jdx < baseSquare.length; jdx++) {
-        baseSquare[idx][jdx] = 0;
-    }
-}
+baseSquare = Array(1000).fill(null).map(item => (new Array(1000).fill(0)));
+// baseSquare = new Array(1000);
+// for (var idx = 0; idx < baseSquare.length; idx++) {
+//     baseSquare[idx] = new Array(1000);
+//     for (var jdx = 0; jdx < baseSquare.length; jdx++) {
+//         baseSquare[idx][jdx] = 0;
+//     }
+// }
 
 let squareInches:number = 0;
 
