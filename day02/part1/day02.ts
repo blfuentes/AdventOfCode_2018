@@ -1,5 +1,5 @@
-var fs = require("fs");
-var path = require('path');
+let fs = require("fs");
+let path = require('path');
 
 let entryElements = [];
 let filepath = path.join(__dirname, "../day02_input.txt");
