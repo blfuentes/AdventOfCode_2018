@@ -44,6 +44,23 @@ function getMostSleepGuardValue(ids: Array<number>,  guardInfo: { [key: number]:
     return guardId * minute;
 }
 
+function getMostRepeatedSleepGuardValue(ids: Array<number>,  guardInfo: { [key: number]: GuardInfo }) : number {
+    let guardId = 0;
+    let maxMinute = 0;
+    let minute = 0;
+    for (let id of ids){
+        var tmpGuard = guardInfo[id]; 
+        var tmpMaxMinute = Math.max.apply(null, tmpGuard.minutesSleeping);
+        if (maxMinute < tmpMaxMinute) {
+            minute = tmpGuard.minutesSleeping.indexOf(tmpMaxMinute);
+            maxMinute = tmpMaxMinute;
+            guardId = id;
+        }
+    }
+
+    return guardId * minute;
+}
+
 // create events
 for (let event of entryElements) {
     var tmpEvent = new GuardEvent(event);
@@ -100,4 +117,5 @@ for (let event of guardEvents) {
 }
 
 let finalResultPart1 = getMostSleepGuardValue(guardIds, guardInfo);
-console.log(`Result part1: ${finalResultPart1}.`);
+let finalResultPart2 = getMostRepeatedSleepGuardValue(guardIds, guardInfo);
+console.log(`Result part1: ${finalResultPart1}. Result part2: ${finalResultPart2}.`);
