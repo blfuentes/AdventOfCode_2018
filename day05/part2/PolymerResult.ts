@@ -21,7 +21,9 @@ export class PolymerResult {
                 let prevCharacterCharCode:number = prevCharacter.charCodeAt(0);
                 if(Math.abs(currentCharacterCharCode - prevCharacterCharCode) == 32) {
                     var searchParam = prevCharacter + currentCharacter;
-                    this.result = this.result.replace(searchParam, "");
+                    var regexp = RegExp(searchParam, "g");
+                    this.result = this.result.replace(regexp, "");
+                    // this.result = this.result.replace(searchParam, "");
                     validString = false;
                 }
             }

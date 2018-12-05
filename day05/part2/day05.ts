@@ -10,6 +10,7 @@ let text:string = fs.readFileSync(filepath, "utf-8");
 let polymerCollection: Array<PolymerResult> = [];
 
 let shortestPolymer: number = 0;
+var startTime = new Date();
 for (var counter = 0; counter < 26; counter++) {
     var tmpPolymer = new PolymerResult(text, String.fromCharCode(counter + 97));
     tmpPolymer.reactPolymer();
@@ -17,10 +18,12 @@ for (var counter = 0; counter < 26; counter++) {
         shortestPolymer = tmpPolymer.value;
     } else if(tmpPolymer.value < shortestPolymer)
         shortestPolymer = tmpPolymer.value;
-    polymerCollection.push(tmpPolymer);
+    // polymerCollection.push(tmpPolymer);
 }
-
+var endTime = new Date();
+var timeElapsed = endTime.valueOf() - startTime.valueOf();
 
 
 // console.log(`Remaining units for ${text} :: ${text.length}`);
+console.log(`Time elapsed: ${timeElapsed}`)
 console.log(`Shortest polymer: ${shortestPolymer}`)

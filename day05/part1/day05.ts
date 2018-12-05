@@ -6,6 +6,7 @@ let text:string = fs.readFileSync(filepath, "utf-8");
 
 let validString = false;
 
+var startTime = new Date();
 while (!validString) {
     validString = true;
     for (var idx = 1; idx < text.length; idx++) {
@@ -15,11 +16,16 @@ while (!validString) {
         let prevCharacterCharCode:number = prevCharacter.charCodeAt(0);
         if(Math.abs(currentCharacterCharCode - prevCharacterCharCode) == 32) {
             var searchParam = prevCharacter + currentCharacter;
-            text = text.replace(searchParam, "");
+            var regexp = RegExp(searchParam, "g");
+            text = text.replace(regexp, "");
+            // text = text.replace(searchParam, "");
             validString = false;
         }
     }
 }
+var endTime = new Date();
+var timeElapsed = endTime.valueOf() - startTime.valueOf();
 
 // console.log(`Remaining units for ${text} :: ${text.length}`);
-console.log(`Remaining units: ${text.length}`)
+console.log(`Time elapsed: ${timeElapsed}`)
+console.log(`Remaining units: ${text.length}.`)
