@@ -11,6 +11,7 @@
         "module": "commonjs"
     },
     "files":[
+        "PolymerResult.ts",
         "day05.ts"
     ]
   }
