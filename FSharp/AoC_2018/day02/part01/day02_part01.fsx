@@ -54,7 +54,7 @@ let finalValue =
 
 
 let input = "aabbccdef"  
-result3 input
+getTupleComposition input
 let teststring2 = "aabbccdef"
 let counted = teststring2 |> Seq.countBy id
 let existsTwo = counted |> Seq.exists (fun (x, y) -> y = 2)
