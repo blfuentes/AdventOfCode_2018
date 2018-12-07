@@ -78,7 +78,6 @@ if (parentNodes.length > 0)
             }
         }
     }
-
 }
 let result: string;
 if (firstNode != undefined && lastNode != undefined){

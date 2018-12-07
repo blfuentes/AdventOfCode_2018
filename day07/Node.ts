@@ -3,6 +3,9 @@ export class Node {
     parentNodes: Array<Node>;
     childNodes: Array<Node>;
 
+    duration: number;
+    remaining: number;
+
     constructor(value: string, parent: Node | undefined) {
         this.element = value;
         this.parentNodes = [];
@@ -10,5 +13,6 @@ export class Node {
             this.parentNodes.push();
         }
         this.childNodes = [];
+        this.duration = this.element.charCodeAt(0) - 64;
     }
 }
