@@ -28,8 +28,8 @@ for (let line of lines) {
     tmpNode.parentNodes.push(tmpParent);
     tmpParent.childNodes.push(tmpNode);
 
-    // tmpNode.parentNodes = tmpNode.parentNodes.sort((first:Node, second:Node) => first.element.charCodeAt(0) - second.element.charCodeAt(0));
-    // tmpParent.childNodes = tmpParent.childNodes.sort((first:Node, second:Node) => first.element.charCodeAt(0) - second.element.charCodeAt(0));
+    tmpNode.parentNodes = tmpNode.parentNodes.sort((first:Node, second:Node) => first.element.charCodeAt(0) - second.element.charCodeAt(0));
+    tmpParent.childNodes = tmpParent.childNodes.sort((first:Node, second:Node) => first.element.charCodeAt(0) - second.element.charCodeAt(0));
 
     if (nodeList.find(_n => _n.element == lineParts[7]) == undefined) {
         nodeList.push(tmpNode);
@@ -40,7 +40,7 @@ let firstNode = nodeList.find(_n => _n.parentNodes.length == 0);
 let lastNode = nodeList.find(_n => _n.childNodes.length == 0);
 
 function findNextElement(input: Array<string>) {
-    return input.shift();
+    return input.sort().shift();
 }
 
 let parentNodes: Array<Node> = []
@@ -94,34 +94,19 @@ for (var idx = 0; idx < 26; idx++) {
 
 let numberOfWorkers: number = 2;
 let workerQueue: { [key: number]: string } = {};
+let workerSecondsQueue: { [key: number]: number } = {};
+let taskInQueue: { [key: string]: boolean } = {};
 for (var idx = 0; idx < numberOfWorkers; idx++) {
     workerQueue[idx] = ".";
 }
 let doneResult: Array<string> = [];
 let secondCounter: number = 0;
-let getNewTask: boolean = true;
-while (currentSolution.length > 0) {
-    let elementForTask:string | undefined;
-    if (getNewTask) {
-        elementForTask = currentSolution.shift();
-        // find free queue
-        getNewTask = false;
-        for (var idx = 0; idx < numberOfWorkers; idx++) {
-            // check if all parents are done
-            if (workerQueue[idx] == "." && elementForTask != undefined) {
-                workerQueue[idx] = elementForTask;
-                var tmpNode = nodeList.find(_n => _n.element == elementForTask);
-                if (tmpNode != undefined) {
-                    tmpNode.duration--;
-                    if (tmpNode.duration == 0) {
-                        nodeList.splice(nodeList.indexOf(tmpNode), 1);
-                        doneResult.push(elementForTask);
-                    }
-                }
-                getNewTask = true;
-                break;
-            }
-        }
+let getNewTask: boolean = false;
+let elementForTask:string | undefined;
+let currentStepIndex: number = 0;
+while (nodeList.length > 0) {
+    for(var idx = 0; idx < numberOfWorkers; idx++) {
+
     }
     secondCounter++;
 }
