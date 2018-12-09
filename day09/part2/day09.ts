@@ -14,6 +14,7 @@ function marbleGivesPoints(marble: number) {
     return (marble % factor) == 0;
 }
 
+var startTime = new Date();
 for (var idx = 0; idx < text.length; idx++) {
     //
     let numberOfPlayers = parseInt(text[idx].split(" ")[0]);
@@ -69,6 +70,9 @@ for (var idx = 0; idx < text.length; idx++) {
             maxValue = player;
         }
     }
+    var endTime = new Date();
+    var timeElapsed = endTime.valueOf() - startTime.valueOf();
+    console.log(`Time elapsed: ${timeElapsed}`)
     console.log(`Winner: ${maxValue}`)
 }
 
