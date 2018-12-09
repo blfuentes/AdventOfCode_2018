@@ -31,7 +31,6 @@ for (var idx = 0; idx < text.length; idx++) {
     let marbleBoard: Array<MarbleNode> = [];
     marbleBoard.push(currentMarble);
     let currentPlayer = 1;
-    let currentIndex = 0;
     let currentMarbleValue = 1;
 
     //
