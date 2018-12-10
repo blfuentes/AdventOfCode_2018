@@ -8,7 +8,7 @@
             "name": "Current TS File (Server)",
             "type": "node",
             "request": "launch",
-            "args": ["${workspaceFolder}/${relativeFile}"],
+            "args": ["${file}"],
             "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
             "sourceMaps": true,
             "cwd": "${workspaceFolder}",
