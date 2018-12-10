@@ -8,11 +8,25 @@
             "name": "Current TS File (Server)",
             "type": "node",
             "request": "launch",
-            "args": ["${relativeFile}"],
+            "args": ["${workspaceFolder}/${relativeFile}"],
             "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "protocol": "inspector",
         },
+        {
+            "name": "BAK_Current TS File",
+            "type": "node",
+            "request": "launch",
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "args": [
+                "${workspaceRoot}/${relativeFile}"
+            ],
+            "protocol": "inspector",
+        }
     ]
 }

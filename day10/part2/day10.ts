@@ -23,13 +23,12 @@ let counter = 0;
 let go = true;
 let lastDistance = 0;
 do {
+    counter++;
     starCollection.map(starpoint => starpoint.calculatePosition(counter));
-
-    // var xxx = starCollection.map(starpoint => starpoint.position[0]);
     let minX = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[0]));
     let minY = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[1]));
 
-    // move to the left
+    // ALTERNATIVE: PRINT MOVE THE POINTS TO THE LEFT-TOP CORNER
     // if (minX < 0) {
     //     starCollection.map(starpoint => {
     //         starpoint.position[0] = starpoint.position[0] + Math.abs(minX);
@@ -40,7 +39,7 @@ do {
     //     });
     // }
 
-    // set to the top
+    // ALTERNATIVE: PRINT MOVE THE POINTS TO THE LEFT-TOP CORNER
     // if (minY < 0) {
     //     starCollection.map(starpoint => {
     //         starpoint.position[1] = starpoint.position[1] + Math.abs(minY);
@@ -53,20 +52,16 @@ do {
 
     let maxX = Math.max.apply(null, starCollection.map(starpoint => starpoint.position[0]));
     let maxY = Math.max.apply(null, starCollection.map(starpoint => starpoint.position[1]));
-    minX = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[0]));
-    minY = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[1]));
 
-    let newDistance = maxY - minY;
-    if (minY >= 0 && maxY >= 0 && maxY - minY <= 20) {
-        if (newDistance > lastDistance){
+    // ALTERNATIVE: PRINT MOVE THE POINTS TO THE LEFT-TOP CORNER
+    // minX = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[0]));
+    // minY = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[1]));
+
+    if (minY >= 0 && maxY >= 0 && maxY - minY == 9) {
             go = false;
-        }
-        lastDistance = newDistance;
-        console.log(`Second ${counter} printed. Distance: ${newDistance}.`);
+        console.log(`Second ${counter} printed.`);
     } else {
-        counter++;
-        console.log(`Second ${counter} skipped. Distance: ${newDistance}.`);
-        lastDistance = newDistance;
+        console.log(`Second ${counter} skipped.`);
         continue;
     }
 
@@ -89,17 +84,13 @@ do {
     for (var idx = 0; idx < maxY + 1; idx++) {
         var newline: string = "";
         for (var jdx = 0; jdx < maxX + 1; jdx++) {
-            // newline += ouputMessage[idx][jdx];
             newline += ouputMessage[jdx][idx];
         }
         file.write(newline + "\n");
         console.log(newline);
     }
-    // ouputMessage.forEach(function(v) { console.log(file.write(v.toString() + "\n")); });
     file.end();
-    // console.log(`Min X: ${minX}, min Y: ${minY}.`);
 
-    console.log(`Second ${counter + 1} finished.`);
-    counter++;
+    console.log(`Second ${counter} finished.`);
 } while (go);
-console.log(`Finished in second: ${counter - 1}`);
+console.log(`Finished in second: ${counter}`);
