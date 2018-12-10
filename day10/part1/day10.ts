@@ -11,7 +11,7 @@ let starCollection: Array<StarPoint> = [];
 
 for (let line of lines) {
     let regExp = new RegExp("-?\\d+", "g");
-    var foundValues = line.match(regExp);//regExp.exec(line);//line.exec(regExp);
+    var foundValues = line.match(regExp);
     if (foundValues != null) {
         starCollection.push(new StarPoint(new Array(parseInt(foundValues[0]), parseInt(foundValues[1])), 
                                             new Array(parseInt(foundValues[2]), parseInt(foundValues[3]))));
@@ -21,14 +21,13 @@ for (let line of lines) {
 
 let counter = 0;
 let go = true;
-let lastDistance = 0;
 do {
     starCollection.map(starpoint => starpoint.calculatePosition(counter));
 
-    // var xxx = starCollection.map(starpoint => starpoint.position[0]);
     let minX = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[0]));
     let minY = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[1]));
 
+    // ALTERNATIVE: PRINT MOVE THE POINTS TO THE LEFT-TOP CORNER
     // move to the left
     // if (minX < 0) {
     //     starCollection.map(starpoint => {
@@ -53,20 +52,17 @@ do {
 
     let maxX = Math.max.apply(null, starCollection.map(starpoint => starpoint.position[0]));
     let maxY = Math.max.apply(null, starCollection.map(starpoint => starpoint.position[1]));
-    minX = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[0]));
-    minY = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[1]));
 
-    let newDistance = maxY - minY;
-    if (minY >= 0 && maxY >= 0 && maxY - minY <= 20) {
-        if (newDistance > lastDistance){
-            go = false;
-        }
-        lastDistance = newDistance;
-        console.log(`Second ${counter} printed. Distance: ${newDistance}.`);
+    // ALTERNATIVE: PRINT MOVE THE POINTS TO THE LEFT-TOP CORNER
+    // minX = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[0]));
+    // minY = Math.min.apply(null, starCollection.map(starpoint => starpoint.position[1]));
+
+    if (minY >= 0 && maxY >= 0 && maxY - minY == 9) {
+        go = false;
+        console.log(`Second ${counter} printed. `);
     } else {
         counter++;
-        console.log(`Second ${counter} skipped. Distance: ${newDistance}.`);
-        lastDistance = newDistance;
+        console.log(`Second ${counter} skipped.`);
         continue;
     }
 
@@ -79,7 +75,7 @@ do {
         ouputMessage[tmpX][tmpY] = "#";
     }
 
-    var newFileName = `second ${counter}.txt`;
+    var newFileName = `second ${counter + 1}.txt`;
     var file = fs.createWriteStream(newFileName);
     file.on('error', function(err:string) { 
         /* error handling */ 
@@ -99,7 +95,7 @@ do {
     file.end();
     // console.log(`Min X: ${minX}, min Y: ${minY}.`);
 
-    console.log(`Second ${counter + 1} finished.`);
+    // console.log(`Second ${counter + 1} finished.`);
     counter++;
 } while (go);
-console.log(`Finished in second: ${counter - 1}`);
+console.log(`Finished in second: ${counter}`);
