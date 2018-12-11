@@ -20,6 +20,9 @@ let main argv =
     // DAY 02
     let resultday02Part1 = day02_part01.finalValue
     printfn "Final result Day 02 part 1: %i" resultday02Part1
+    let resultday02Part2 = day02_part02.resolve
+    printfn "Final result Day 02 part 2: %s" resultday02Part2
+
 
     //
     let endprogram = Console.ReadLine()

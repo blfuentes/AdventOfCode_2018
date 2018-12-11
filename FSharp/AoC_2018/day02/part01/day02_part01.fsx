@@ -1,7 +1,7 @@
 ﻿open System.IO
 
 let filepath = __SOURCE_DIRECTORY__ + @"../../day02_input.txt"
-let filepath = __SOURCE_DIRECTORY__ + @"./test01.txt"
+let filepath = __SOURCE_DIRECTORY__ + @"../../test01.txt"
 let lines = File.ReadLines(filepath)
 
 type Counter(value: string) =
