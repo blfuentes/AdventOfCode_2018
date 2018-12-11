@@ -34,7 +34,6 @@ let maxSquareSize = 0;
 let maxValue = 0;
 let coordMax = [0, 0];
 for (let squareSize = 1; squareSize <= 300; squareSize++) {
-    coordMax = [0, 0]
     fuelGridSquareValues = Array(300).fill(null).map(item => (new Array(300).fill(0)));
     for (let column = 0; column < 300; column++) {
         for (let row = 0; row < 300; row++) {
@@ -47,18 +46,25 @@ for (let squareSize = 1; squareSize <= 300; squareSize++) {
             }
         }
     }
+    let currentcoordMax = [0,0];
+    let currentMaxValue = 0;
     for (let column2 = 0; column2 < 300; column2++) {
         for (let row2 = 0; row2 < 300; row2++) {
-            if (fuelGridSquareValues[column2][row2] > maxValue) {
-                maxValue = fuelGridSquareValues[column2][row2];
-                coordMax = [column2, row2];
-                maxSquareSize = squareSize;
+            if (fuelGridSquareValues[column2][row2] > currentMaxValue) {
+                currentMaxValue = fuelGridSquareValues[column2][row2];
+                currentcoordMax = [column2, row2];
             }
         }
     }
-    coordMax[0] = coordMax[0] - maxSquareSize + 1;
-    coordMax[1] = coordMax[1] - maxSquareSize + 1;
-    console.log(`Highest coordinate ${coordMax.toString()} with MaxSquareSize ${maxSquareSize} and power ${maxValue}.`);
+    if (currentMaxValue > maxValue) {
+        coordMax[0] = currentcoordMax[0] - squareSize + 1;
+        coordMax[1] = currentcoordMax[1] - squareSize + 1;
+        currentcoordMax[0] = currentcoordMax[0] - squareSize + 1;
+        currentcoordMax[1] = currentcoordMax[1] - squareSize + 1;
+        maxValue = currentMaxValue;
+        maxSquareSize = squareSize;
+    }
+    console.log(`Current highest coordinate ${currentcoordMax.toString()} with square size ${squareSize} and power ${currentMaxValue}. Highest coordinate ${coordMax.toString()} with MaxSquareSize ${maxSquareSize} and Maxpower ${maxValue}.`);
 }
 
 
