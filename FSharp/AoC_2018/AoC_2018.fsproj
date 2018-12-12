@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="helpers\helpers.fs" />
     <None Include="day01\part01\day01_part01.fsx" />
     <Compile Include="day01\part01\day01_part01.fs" />
     <Compile Include="day01\part02\day01_part02.fs" />

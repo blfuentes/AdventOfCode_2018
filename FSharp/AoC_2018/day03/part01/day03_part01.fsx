@@ -1,7 +1,9 @@
 ﻿open System.IO
 
-let filepath = __SOURCE_DIRECTORY__ + @"../../day03_input.txt"
-//let filepath = __SOURCE_DIRECTORY__ + @"../../test01_input.txt"
+let toArray (arr: 'T [,]) = arr |> Seq.cast<'T> |> Seq.toArray
+
+//let filepath = __SOURCE_DIRECTORY__ + @"../../day03_input.txt"
+let filepath = __SOURCE_DIRECTORY__ + @"../../test01_input.txt"
 let lines = File.ReadLines(filepath) |> List.ofSeq
 
 let findId (i, _, _, _, _) = i |> int
@@ -20,20 +22,25 @@ let getMaxCoords =
     let y = elements |> Seq.map (fun (_, _, y, _, _) -> x) |> Seq.max
     x, y
 
-let setArray (description: (int * int * int * int * int))  =
-    let id = fun (i, _, _, _, _) -> i
-    let startX = fun (_, x, _, _, _) -> x
-    let startY = fun (_, _, y, _, _) -> y
-    let width = fun (_, _, _, w, _) -> w
-    let height = fun (_, _, _, _, h) -> h
-    let arrayResult = Array2D.init (width + 1) (height + 1) (fun i j -> if i < width &&  j < height then id)
-    arrayResult
+let setArray (id : int, startX : int, startY : int, width : int, height : int) (maxX: int) (maxY: int) =
+    Array2D.init (maxY) (maxX) (fun row column -> 
+            if column >= startX && column <= startX + width && row >= startY && row <= startY + height then id |> string
+            else -2 |> string
+        )
+
+//let compareArray origin seqOfArrays =
+//    let baseOrigin = toArray origin
+//    seqOfArrays |> Seq.map (fun array -> toArray array) |> Seq.zip (toArray origin) |> Seq.map (fun (a, b) -> a <> -2 && a <> b) |> Seq.length
+
+let compareArray (origin: string[,], seqOfArrays:seq<string[,]>) =
+    let baseOrigin = toArray origin
+    seqOfArrays |> Seq.map (fun array -> Seq.zip baseOrigin (toArray array) |> Seq.map (fun (a, b) -> a <> "-2" && a <> b) |> Seq.length |> Seq.sum
 
 let twoDimensionalArray = 
     let inputElements = elements
     let X, Y = getMaxCoords
-    let arrayOfArrays = Array2D.init X Y (fun i j -> ".")
-    //let finalArray = elements |> Seq.iter (fun (e) -> setArray fst e arrayOfArrays |> string)
-
-    arrayOfArrays
+    let originArray = Array2D.init X Y (fun i j -> ".")
+    let collectionOfArrays = elements |> Seq.map (fun e -> setArray e) 
+    let differents = collectionOfArrays |> Seq.map (fun input -> compareArray input collectionOfArrays)
+    differents
     
