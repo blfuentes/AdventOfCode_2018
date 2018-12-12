@@ -34,3 +34,5 @@ node_modules
 Fsharp/AoC_2018/bin
 Fsharp/AoC_2018/obj
 .vs
+
+*.py
