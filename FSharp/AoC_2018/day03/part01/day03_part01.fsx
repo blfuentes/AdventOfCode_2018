@@ -20,14 +20,20 @@ let getMaxCoords =
     let y = elements |> Seq.map (fun (_, _, y, _, _) -> x) |> Seq.max
     x, y
 
-let setArray id inputArray =
-    let result = 
+let setArray (description: (int * int * int * int * int))  =
+    let id = fun (i, _, _, _, _) -> i
+    let startX = fun (_, x, _, _, _) -> x
+    let startY = fun (_, _, y, _, _) -> y
+    let width = fun (_, _, _, w, _) -> w
+    let height = fun (_, _, _, _, h) -> h
+    let arrayResult = Array2D.init (width + 1) (height + 1) (fun i j -> if i < width &&  j < height then id)
+    arrayResult
 
 let twoDimensionalArray = 
     let inputElements = elements
     let X, Y = getMaxCoords
     let arrayOfArrays = Array2D.init X Y (fun i j -> ".")
-    let finalArray = elements |> Seq.iter (fun (e) -> setArray fst e arrayOfArrays |> string)
+    //let finalArray = elements |> Seq.iter (fun (e) -> setArray fst e arrayOfArrays |> string)
 
-    finalArray
+    arrayOfArrays
     
