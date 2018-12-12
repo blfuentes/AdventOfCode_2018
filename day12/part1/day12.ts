@@ -19,10 +19,6 @@ for (let pot of initialStateInput) {
     potStateCollection.push(newPotState);
 }
 
-// String.prototype.replaceAt=function(index, replacement) {
-//     return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
-// }
-
 for (let ldx = 2; ldx < lines.length; ldx++) {
     potModifiers.push([lines[ldx].split(' ')[0], lines[ldx].split(' ')[2]]);
 }
@@ -71,12 +67,9 @@ for (let iteration = 1; iteration <= 20; iteration++) {
             newState[idx] = ".";
         }
     }
-    // console.log(`New State iteration: ${iteration}: ${newState.toString().replace(',', '')}`);
     for (let idx = minIndex - 2; idx <= maxIndex + 3; idx++) {
         potStateCollection[idx].state = newState[idx];
     }
-    //
-    // numberOfPlants += potStateCollection.filter(_p => _p.state == "#").length;
 }
 
 let numberOfPlants  = 0;
