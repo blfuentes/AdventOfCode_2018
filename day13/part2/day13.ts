@@ -4,12 +4,13 @@ let path = require('path');
 import { CarPosition } from "../CarPosition";
  
 // let filepath = path.join(__dirname, "../test13_input.txt");
+// let filepath = path.join(__dirname, "../test13_input2.txt");
 let filepath = path.join(__dirname, "../day13_input.txt");
 let lines = fs.readFileSync(filepath, "utf-8").split("\r\n");
 
 function displayRoadMap (roadmap: Array<Array<string>>) {
     let rowIdx = 0;
-    while (rowIdx < roadmap[rowIdx].length) {
+    while (rowIdx < lines.length) {
         let rowDisplay = "";
         for (let colIdx = 0; colIdx < roadmap.length; colIdx++) {
             rowDisplay += roadmap[colIdx][rowIdx];
@@ -55,40 +56,12 @@ function sortByPosition(a:CarPosition, b:CarPosition){
 
 let crashed = false;
 let coordCrashed: Array<number> = []
-displayRoadMap(roadMap);
+// displayRoadMap(roadMap);
+let carsLeft = carsPositions.filter(_c => _c.isAlive).length;
+crashed = false;
 do {
-    crashed = false;
-    let rowIdx = 0;
+    carsPositions = carsPositions.filter(_c => _c.isAlive).sort((a, b) => sortByPosition(a, b));
 
-    // for (let carIdx = 0; carIdx < carsPositions.length; carIdx++) {
-    //     let cardInMov = carsPositions[carIdx];
-
-    //     let originCharacter = roadMapNoCars[cardInMov.coordX][cardInMov.coordY];
-    //     roadMap[cardInMov.coordX][cardInMov.coordY] = originCharacter;
-    //     let nextCoord = cardInMov.getNextCoordinate();
-    //     cardInMov.coordX = nextCoord[0];
-    //     cardInMov.coordY = nextCoord[1];
-    //     let nextOriginCharacter = roadMapNoCars[nextCoord[0]][nextCoord[1]];
-    //     cardInMov.setOrientation(nextOriginCharacter);
-    //     if (nextOriginCharacter == "+") {
-    //         cardInMov.numIntersections += 1;
-    //     }
-    //     roadMap[cardInMov.coordX][cardInMov.coordY] = cardInMov.state;
-
-        // for (let simulateCarIdx = carIdx + 1; simulateCarIdx < carsPositions.length; simulateCarIdx++) {
-        //     let nextCoordSimulateCard = carsPositions[simulateCarIdx].getNextCoordinate();
-        //     if (nextCoordSimulateCard[0] == nextCoord[0] && nextCoordSimulateCard[1] == nextCoord[1]) {
-        //         roadMap[cardInMov.coordX][cardInMov.coordY] = "X";
-        //         coordCrashed = [cardInMov.coordX, cardInMov.coordY];
-        //         crashed = true;
-        //         break;
-        //     }
-        // }
-        // if (crashed) {
-        //     break;
-        // }
-    // }
-    carsPositions = carsPositions.sort((a, b) => sortByPosition(a, b));
     for (let car of carsPositions) {
         let originCharacter = roadMapNoCars[car.coordX][car.coordY];
         roadMap[car.coordX][car.coordY] = originCharacter;
@@ -102,43 +75,30 @@ do {
         }
         let stateNextCoord = roadMap[nextCoord[0]][nextCoord[1]];
         if (stateNextCoord == "<" || stateNextCoord == ">" || stateNextCoord == "^" || stateNextCoord == "v") {
-            roadMap[car.coordX][car.coordY] = "X";
-            coordCrashed = [car.coordX, car.coordY];
-            crashed = true;
-            break;
+            let crashedCar = carsPositions.find(_c => _c.coordX == nextCoord[0] && _c.coordY == nextCoord[1] && _c.cardId != car.cardId);
+            if (crashedCar != undefined) {
+                roadMap[crashedCar.coordX][crashedCar.coordY] = roadMapNoCars[crashedCar.coordX][crashedCar.coordY];
+                if(!crashed) {
+                    coordCrashed = [car.coordX, car.coordY];
+                    crashed = true;
+                }
+                car.isAlive = false;
+                crashedCar.isAlive = false;
+                carsPositions.splice(carsPositions.indexOf(car), 1);
+                carsPositions.splice(carsPositions.indexOf(crashedCar), 1);
+            }
         } else {
             roadMap[car.coordX][car.coordY] = car.state;
         }
     }
-
-    // for (let car of carsPositions) {
-    //     let originCharacter = roadMapNoCars[car.coordX][car.coordY];
-    //     roadMap[car.coordX][car.coordY] = originCharacter;
-    //     let nextCoord = car.getNextCoordinate();
-    //     let nextOriginCharacter = roadMapNoCars[nextCoord[0]][nextCoord[1]];
-    //     car.setOrientation(nextOriginCharacter);
-    //     if (nextOriginCharacter == "+") {
-    //         car.numIntersections += 1;
-    //     }
-    //     roadMap[car.coordX][car.coordY] = car.state;
-    // }
-
-    // for (let car of carsPositions) {
-    //     let crashedCar = carsPositions.find(_c => _c.cardId != car.cardId && car.coordX == _c.coordX && car.coordY == _c.coordY);
-    //     if (crashedCar != undefined) {
-    //         roadMap[car.coordX][car.coordY] = "X";
-    //         coordCrashed = [car.coordX, car.coordY];
-    //         crashed = true;
-    //         break;
-    //     }
-    // }
-
     // displayRoadMap(roadMap);
-} while (!crashed);
+    carsLeft = carsPositions.filter(_c => _c.isAlive).length;
+} while (carsLeft > 1);
 
-// DISPLAY
-// displayRoadMap(roadMap);
-// console.log();
-// displayRoadMap(roadMapNoCars);
+let carSurvivor = carsPositions.find(_c => _c.isAlive);
 
-console.log(`Part 1 crashed: ${coordCrashed.toString()}!`);
+if (carSurvivor != undefined) {
+    console.log(`Part 1 crashed: ${coordCrashed.toString()}!`);
+    console.log(`Part 2 survivor: ${carSurvivor.coordX},${carSurvivor.coordY}!`);
+    // console.log(`Part 2 survivor: ${carSurvivor.coordX},${carSurvivor.coordY}!`);
+}
