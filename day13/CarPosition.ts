@@ -66,22 +66,17 @@ export class CarPosition {
         switch (this.state) {
             case ">" :
                 nextCoord = [this.coordX + 1, this.coordY];
-                // this.coordX += 1;
                 break;
             case "v" :
                 nextCoord = [this.coordX, this.coordY + 1];
-                // this.coordY += 1;
                 break;
             case "<" :
                 nextCoord = [this.coordX - 1, this.coordY];
-                // this.coordX -= 1;
                 break;
             case "^" :
                 nextCoord = [this.coordX, this.coordY - 1];
-                // this.coordY -= 1;
                 break;
         }
-        // nextCoord = 
-        return nextCoord;//[this.coordX, this.coordY];
+        return nextCoord;
     }
 }
