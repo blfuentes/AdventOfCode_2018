@@ -4,8 +4,6 @@ export class CarPosition {
     coordX: number;
     coordY: number;
     numIntersections: number;
-    numMoves: number;
-    prevState: string;
     isAlive: boolean;
 
     // Intersections 
@@ -19,7 +17,6 @@ export class CarPosition {
         this.coordX = coordinate[0];
         this.coordY = coordinate[1];
         this.numIntersections = 0;
-        this.numMoves = 0;
         this.isAlive = true;
     }
 

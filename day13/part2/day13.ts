@@ -57,10 +57,10 @@ function sortByPosition(a:CarPosition, b:CarPosition){
 let crashed = false;
 let coordCrashed: Array<number> = []
 // displayRoadMap(roadMap);
-let carsLeft = carsPositions.filter(_c => _c.isAlive).length;
+let carsLeft = carsPositions.length;
 crashed = false;
 do {
-    carsPositions = carsPositions.filter(_c => _c.isAlive).sort((a, b) => sortByPosition(a, b));
+    carsPositions = carsPositions.sort((a, b) => sortByPosition(a, b));
 
     for (let car of carsPositions) {
         let originCharacter = roadMapNoCars[car.coordX][car.coordY];
@@ -92,7 +92,7 @@ do {
         }
     }
     // displayRoadMap(roadMap);
-    carsLeft = carsPositions.filter(_c => _c.isAlive).length;
+    carsLeft = carsPositions.length;
 } while (carsLeft > 1);
 
 let carSurvivor = carsPositions.find(_c => _c.isAlive);
@@ -100,5 +100,4 @@ let carSurvivor = carsPositions.find(_c => _c.isAlive);
 if (carSurvivor != undefined) {
     console.log(`Part 1 crashed: ${coordCrashed.toString()}!`);
     console.log(`Part 2 survivor: ${carSurvivor.coordX},${carSurvivor.coordY}!`);
-    // console.log(`Part 2 survivor: ${carSurvivor.coordX},${carSurvivor.coordY}!`);
 }
