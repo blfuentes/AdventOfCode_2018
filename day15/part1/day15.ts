@@ -129,4 +129,5 @@ do {
             round(player);
         }
     }
+    playerCollection = playerCollection.sort(sortByPosition);
 } while (playerCollection.filter(_p => _p.isAlive).length == 1);
