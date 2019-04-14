@@ -11,6 +11,6 @@
         "module": "commonjs"
     },
     "files":[
-        "day15.ts"
+        "day23.ts"
     ]
 }

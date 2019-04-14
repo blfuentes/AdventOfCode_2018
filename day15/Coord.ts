@@ -5,9 +5,11 @@ export class Coord {
     coordY: number;
     isFree: boolean;
     element: Element;
+    distance: number;
 
     constructor (xpos: number, ypos: number) {
         this.coordX = xpos;
         this.coordY = ypos;
+        this.distance = 0;
     }
 }
