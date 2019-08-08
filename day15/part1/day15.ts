@@ -1,11 +1,13 @@
-const fs = require('fs');
-const path = require('path');
+import fs = require('fs');
+import path = require('path');
 
 import { Coord } from "../Coord";
-import { ElementType, Element, Player, Elf, Goblin, Field, Wall } from "../Element"
+import { ElementType, Element, Player, Elf, Goblin, Field, Wall } from "../Element";
+import { MazeResult } from "../MazeResult";
  
 // let filepath = path.join(__dirname, "../test_input.txt");
-let filepath = path.join(__dirname, "../movement_input.txt");
+// let filepath = path.join(__dirname, "../movement_input.txt");
+let filepath = path.join(__dirname, "../basic_sample.txt");
 // let filepath = path.join(__dirname, "../day15_input.txt");
 let lines = fs.readFileSync(filepath, "utf-8").split("\r\n");
 
@@ -77,22 +79,22 @@ function findAvailableEnemyPositions(player: Player) {
     }
     for (let enemy of enemies) {
         // up
-        let upCoord = mapPositions.find(_m => _m.coordX == enemy.position.coordX && _m.coordY == enemy.position.coordY - 1);
+        let upCoord = mapPositions.find(_m => _m.coordX == enemy.position.coordX && _m.coordY == (enemy.position.coordY - 1));
         if (upCoord != undefined && upCoord.element.elementType == ElementType.FIELD) {
             enemyPositions.push(upCoord);
         }
         // down
-        let downCoord = mapPositions.find(_m => _m.coordX == enemy.position.coordX && _m.coordY == enemy.position.coordY + 1);
+        let downCoord = mapPositions.find(_m => _m.coordX == enemy.position.coordX && _m.coordY == (enemy.position.coordY + 1));
         if (downCoord != undefined && downCoord.element.elementType == ElementType.FIELD) {
             enemyPositions.push(downCoord);
         }
         // left
-        let leftCoord = mapPositions.find(_m => _m.coordX == enemy.position.coordX - 1 && _m.coordY == enemy.position.coordY);
+        let leftCoord = mapPositions.find(_m => _m.coordX == (enemy.position.coordX - 1) && _m.coordY == enemy.position.coordY);
         if (leftCoord != undefined && leftCoord.element.elementType == ElementType.FIELD) {
             enemyPositions.push(leftCoord);
         }
         // right
-        let rightCoord = mapPositions.find(_m => _m.coordX == enemy.position.coordX + 1 && _m.coordY == enemy.position.coordY);
+        let rightCoord = mapPositions.find(_m => _m.coordX == (enemy.position.coordX + 1) && _m.coordY == enemy.position.coordY);
         if (rightCoord != undefined && rightCoord.element.elementType == ElementType.FIELD) {
             enemyPositions.push(rightCoord);
         }
@@ -143,71 +145,79 @@ function move (player: Player, availableEnemyPositions: Array<Coord>) {
 let row = [0, 0, -1, 1 ];
 let col = [-1, 1, 0, 0 ];
 
-function isValid(visited: Array<Array<boolean>>, position: Coord)
+function isValid(visited: Array<Coord>, position: Coord)
 {
     let checkPosition = mapPositions.find(_p => _p.coordX == position.coordX &&
                                                 _p.coordY == position.coordY);
+    let isVisited = false;
+    for (var j = 0; j < visited.length; j ++) {
+            if ((visited[j].coordX == position.coordX && visited[j].coordY == position.coordY)) {
+                isVisited = true;
+                break;
+        }
+    }
     return (position.coordY >= 0) && 
             (position.coordY < lines.length) && 
             (position.coordX >= 0) && 
             (position.coordX < lines[0].length) && 
             (checkPosition != undefined && checkPosition.element.elementType == ElementType.FIELD) && 
-            !visited[position.coordX][position.coordY];
+            !isVisited;
 }
 
 function findPath(origin: Coord, target: Coord) {
-    // construct a matrix to keep track of visited cells
-    let visited: Array<Array<boolean>> = [];
-    visited = Array(lines[0].length).fill(null).map(item => (new Array(lines.length).fill(false)));
+    let queue = Array<MazeResult>();
+    let validpaths = Array<Array<Coord>>();
 
-    // create an empty queue
-    let queue: Array<Coord> = [];
+    // New points, where we did not check the surroundings:
+    // remember the position and how we got there
+    // initially our starting point and a path containing only this point
+    let tmpElement = new MazeResult(origin, [origin]);
+    queue.push(tmpElement);
 
-    // mark source cell as visited and enqueue the source node
-    visited[origin.coordX][origin.coordY] = true;
-    queue.push(origin);
+    while (queue.length > 0) {
+        // get next position to check viable directions
+        let pointToReach = queue.shift();
+        let position = new Coord(0, 0);
+        let path = new Array<Coord>();
+        if(pointToReach != undefined){
+            position = pointToReach.position;
+            path = pointToReach.path;
+        } 
+        // all points in each direction
+        let direction = [ 
+                            [ position.coordX, position.coordY - 1 ],
+                            [ position.coordX, position.coordY + 1 ],
+                            [ position.coordX - 1, position.coordY ],
+                            [ position.coordX + 1, position.coordY ]
+                        ];
+        for(var i = 0; i < direction.length; i++) { 
+            let newTarget = new Coord(direction[i][0], direction[i][1]);
+            if (isValid(path, newTarget)) {
+                //
+                let newPath = path.slice(0);
+                newPath.push(newTarget);
 
-    // stores length of longest path from source to destination
-    let minDistance = lines.length * lines[0].length;
+                if (validpaths.length > 0 && validpaths.sort(_p => _p.length).length < newPath.length)
+                    continue;
 
-    // run till queue is not empty
-    while (queue.length > 0)
-    {
-        // pop front node from queue and process it
-        let firstCoord = queue.shift();
-        if (firstCoord != undefined) {
-            // (i, j) represents current cell and dist stores its
-            // minimum distance from the source
-            let i = firstCoord.coordX;
-            let j = firstCoord.coordY;
-            let dist = firstCoord.distance;
-
-            // if destination is found, update min_dist and stop
-            if (i == target.coordX && j == target.coordY)
-            {
-                minDistance = dist;
-                break;
-            }
-
-            // check for all 4 possible movements from current cell
-            // and enqueue each valid movement
-            for (let k = 0; k < 4; k++)
-            {
-                // check if it is possible to go to position
-                // (i + row[k], j + col[k]) from current position
-                let newTarget = new Coord(i + row[k], j + col[k]);
-                if (isValid(visited, newTarget))
-                {
-                    // mark next cell as visited and enqueue it
-                    visited[i + row[k]][j + col[k]] = true;
-                    newTarget.distance++;
-                    queue.push(newTarget);
+                // check if we are at end
+                if (newTarget.coordX != target.coordX || newTarget.coordY != target.coordY) {
+                    // remember position and the path to it
+                    tmpElement = new MazeResult(newTarget, newPath);                    
+                    queue.push(tmpElement);
+                } else {
+                    // remember this path from start to end
+                    validpaths.push(newPath);
+                    // break here if you want only one shortest path
                 }
             }
         }
     }
-    
-    return minDistance != lines.length * lines[0].length;
+
+    validpaths = validpaths.sort(_p => _p.length);
+    let result = validpaths.shift();
+
+    return result;
 }
 
 function attack (attacker: Player, target: Player) {
