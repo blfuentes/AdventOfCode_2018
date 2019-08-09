@@ -46,11 +46,16 @@ export class Player extends Element {
     HP: number;
     AP: number;
 
+    EnemiesPositions: Array<Coord>;
+
+    NextPosition: Coord;
+
     constructor (location: Coord, type: ElementType) {
         super(location, type);
         this.isAlive = true;
         this.HP = 200;
         this.AP = 3;
+        this.EnemiesPositions = new Array<Coord>();        
     }
 
     showStats() {
