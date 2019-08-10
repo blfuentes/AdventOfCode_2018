@@ -9,9 +9,10 @@ import { MazeResult } from "../MazeResult";
 // let filepath = path.join(__dirname, "../movement_input.txt");
 // let filepath = path.join(__dirname, "../basic_sample.txt");
 // let filepath = path.join(__dirname, "../combat_sample.txt");
+// let filepath = path.join(__dirname, "../combat_sample05.txt");
 let filepath = path.join(__dirname, "../day15_input.txt");
-// let lines = fs.readFileSync(filepath, "utf-8").split("\r\n");
-let lines = fs.readFileSync(filepath, "utf-8").split("\n");
+let lines = fs.readFileSync(filepath, "utf-8").split("\r\n");
+// let lines = fs.readFileSync(filepath, "utf-8").split("\n");
 
 // INIT CAVEMAP
 let caveMap: Array<Array<string>> = [];
@@ -250,7 +251,7 @@ function attack (attacker: Player, target: Player) {
         target.isAlive = false;
 
     }
-    console.log(`${target.display()} [${target.position.coordX}, ${target.position.coordY}] attacked by` + 
+    console.log(`${target.display()} [${target.position.coordX}, ${target.position.coordY}] attacked by ` + 
     `${attacker.display()} [${attacker.position.coordX}, ${attacker.position.coordY}]. ` +
     `Damaged with ${attacker.AP} points. Current health: ${target.HP}.`)
     if (target.HP == 0) {
@@ -342,21 +343,27 @@ for (let line of lines) {
  playerCollection = playerCollection.sort(sortPlayerByPosition);
 
 displayCaveMap(caveMap);
-let roundNumber = 1;
+let roundNumber = 0;
 do {
+    let takenActions = 0;
     for (let player of playerCollection) {
         if (player.isAlive && AreEnemiesLeft(player)) {
             player.EnemiesPositions = findAvailableEnemyPositions(player).sort(sortByPosition); 
             round(player);
+            takenActions++;
         }
     }
-    displayCaveMap(caveMap);
-    console.log(`End of round ${roundNumber++}.`);
+    // displayCaveMap(caveMap);    
+    // if (takenActions == playerCollection.length) {
+    //     roundNumber++;
+    // }
+    roundNumber++;
+    console.log(`End of round ${roundNumber}.`);
     playerCollection = playerCollection.filter(_p => _p.isAlive).sort(sortPlayerByPosition);
 
 } while (elfCollection.find(_e => _e.isAlive) && goblinCollection.find(_g => _g.isAlive))
 // while (playerCollection.filter(_p => _p.isAlive && _p.elementType == ElementType.GOBLIN).length > 0 && 
 //             playerCollection.filter(_p => _p.isAlive && _p.elementType == ElementType.ELF).length > 0 );
 let score = playerCollection.map(_p => _p.HP)
-            .reduce((prev, curr) => prev + curr, 0) * (roundNumber - 1);
+            .reduce((prev, curr) => prev + curr, 0) * (--roundNumber);
 console.log(`finished! Score: ${score}`);
