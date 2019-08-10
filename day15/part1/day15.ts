@@ -6,8 +6,9 @@ import { ElementType, Element, Player, Elf, Goblin, Field, Wall } from "../Eleme
 import { MazeResult } from "../MazeResult";
  
 // let filepath = path.join(__dirname, "../test_input.txt");
-let filepath = path.join(__dirname, "../movement_input.txt");
+// let filepath = path.join(__dirname, "../movement_input.txt");
 // let filepath = path.join(__dirname, "../basic_sample.txt");
+let filepath = path.join(__dirname, "../combat_sample.txt");
 // let filepath = path.join(__dirname, "../day15_input.txt");
 let lines = fs.readFileSync(filepath, "utf-8").split("\r\n");
 
@@ -137,10 +138,10 @@ function move (player: Player) {
         let positionToCheck = player.EnemiesPositions[idx];
         let foundPath = findPath(player.position, positionToCheck);
         let tmpDistance = 0;
-        if (foundPath) {
-            doMove = true;
+        if (foundPath) {            
             tmpDistance = foundPath.length;
-            if (idx == 0) {
+            if (idx == 0 || !doMove) {
+                doMove = true;
                 minDistance = foundPath.length;
                 coordToMove = foundPath[1];
             } else if (tmpDistance < minDistance) {
@@ -234,7 +235,18 @@ function findPath(origin: Coord, target: Coord) {
 }
 
 function attack (attacker: Player, target: Player) {
-
+    if (target.HP > attacker.AP) {
+        target.HP -= attacker.AP;
+    } else {
+        target.HP = 0;
+        target.isAlive = false;
+        let targetPosition = mapPositions.find(_p => _p.coordX == target.position.coordX && _p.coordY == target.position.coordY);
+        if (targetPosition != undefined) {
+            target.elementType = ElementType.FIELD;
+            targetPosition.element = new Field(target.position);
+            caveMap[targetPosition.coordX][targetPosition.coordY] = target.display();
+        }
+    }
 }
 
 function round(player: Player) { 
@@ -242,22 +254,27 @@ function round(player: Player) {
     if (target == undefined){
         move(player);
     } else {
+        console.log(`${target.display()} [${target.position.coordX}, ${target.position.coordY}] attacked by` + 
+        `${player.display()} [${player.position.coordX}, ${player.position.coordY}]. ` +
+        `Damaged with ${player.AP} points. Current health: ${target.HP}.`)
         attack(player, target);
     }
 }
 
 function takeNewPlace(player: Player) {
-    let newPosition = mapPositions.find(_p => _p.coordX == player.NextPosition.coordX && _p.coordY == player.NextPosition.coordY);
-    let oldPosition = mapPositions.find(_p => _p.coordX == player.position.coordX && _p.coordY == player.position.coordY);
-    if (oldPosition != undefined && newPosition != undefined) {
-        oldPosition.isFree = true;
-        oldPosition.element = new Field(new Coord(oldPosition.coordX, oldPosition.coordY));
-        caveMap[oldPosition.coordX][oldPosition.coordY] = oldPosition.element.display();
-
-        newPosition.isFree = false;
-        newPosition.element = player;
-        player.position = newPosition;   
-        caveMap[newPosition.coordX][newPosition.coordY] = newPosition.element.display();             
+    if(player.NextPosition != undefined) {
+        let newPosition = mapPositions.find(_p => _p.coordX == player.NextPosition.coordX && _p.coordY == player.NextPosition.coordY);
+        let oldPosition = mapPositions.find(_p => _p.coordX == player.position.coordX && _p.coordY == player.position.coordY);
+        if (oldPosition != undefined && newPosition != undefined) {
+            oldPosition.isFree = true;
+            oldPosition.element = new Field(new Coord(oldPosition.coordX, oldPosition.coordY));
+            caveMap[oldPosition.coordX][oldPosition.coordY] = oldPosition.element.display();
+    
+            newPosition.isFree = false;
+            newPosition.element = player;
+            player.position = newPosition;   
+            caveMap[newPosition.coordX][newPosition.coordY] = newPosition.element.display();             
+        }
     }
 }
 
@@ -308,26 +325,20 @@ for (let line of lines) {
  playerCollection = playerCollection.sort(sortPlayerByPosition);
 
 displayCaveMap(caveMap);
-
+let roundNumber = 0;
 do {
-    // for (let player of playerCollection) {
-    //     if (AreEnemiesLeft(player)) {
-    //         player.EnemiesPositions = findAvailableEnemyPositions(player).sort(sortByPosition); 
-    //     }
-    // }
     for (let player of playerCollection) {
-        if (AreEnemiesLeft(player)) {
+        if (player.isAlive && AreEnemiesLeft(player)) {
             player.EnemiesPositions = findAvailableEnemyPositions(player).sort(sortByPosition); 
             round(player);
             takeNewPlace(player);
         }
     }
-    // for (let player of playerCollection) {
-    //     if (AreEnemiesLeft(player)) {
-    //         takeNewPlace(player);
-    //     }
-    // }
-    // refreshCaveMap();
     displayCaveMap(caveMap);
+    console.log(`End of round ${++roundNumber}.`);
     playerCollection = playerCollection.sort(sortPlayerByPosition);
-} while (playerCollection.filter(_p => _p.isAlive).length > 1);
+
+} while (playerCollection.filter(_p => _p.isAlive && _p.elementType == ElementType.GOBLIN).length > 0 && 
+            playerCollection.filter(_p => _p.isAlive && _p.elementType == ElementType.ELF).length > 0 );
+
+console.log("finished!");
