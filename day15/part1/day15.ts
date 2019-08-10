@@ -137,7 +137,25 @@ function findAvailableEnemyPositions(player: Player) {
     return enemyPositions;
 }
 
-let wasHere: Array<Coord> = [];
+function isValid(visited: Array<Coord>, position: Coord)
+{
+    let checkPosition = mapPositions.find(_p => _p.coordX == position.coordX &&
+                                                _p.coordY == position.coordY);
+    let isVisited = false;
+    for (var j = 0; j < visited.length; j ++) {
+            if ((visited[j].coordX == position.coordX && visited[j].coordY == position.coordY)) {
+                isVisited = true;
+                break;
+        }
+    }
+    return (position.coordY >= 0) && 
+            (position.coordY < lines.length) && 
+            (position.coordX >= 0) && 
+            (position.coordX < lines[0].length) && 
+            (checkPosition != undefined && checkPosition.element.elementType == ElementType.FIELD) && 
+            !isVisited;
+}
+
 // let correctPath: Array<Coord> = [];
 function move (player: Player) {
     let coordToMove: Coord = new Coord(0, 0);
@@ -145,7 +163,7 @@ function move (player: Player) {
     let doMove = false;
     for (let idx = 0; idx < player.EnemiesPositions.length; idx++) {
         let positionToCheck = player.EnemiesPositions[idx];
-        let foundPath = findPath(player.position, positionToCheck);
+        let foundPath = findPath(player.position, positionToCheck, minDistance);
         let tmpDistance = 0;
         if (foundPath) {            
             tmpDistance = foundPath.length;
@@ -168,26 +186,9 @@ function move (player: Player) {
   
 }
 
-function isValid(visited: Array<Coord>, position: Coord)
-{
-    let checkPosition = mapPositions.find(_p => _p.coordX == position.coordX &&
-                                                _p.coordY == position.coordY);
-    let isVisited = false;
-    for (var j = 0; j < visited.length; j ++) {
-            if ((visited[j].coordX == position.coordX && visited[j].coordY == position.coordY)) {
-                isVisited = true;
-                break;
-        }
-    }
-    return (position.coordY >= 0) && 
-            (position.coordY < lines.length) && 
-            (position.coordX >= 0) && 
-            (position.coordX < lines[0].length) && 
-            (checkPosition != undefined && checkPosition.element.elementType == ElementType.FIELD) && 
-            !isVisited;
-}
 
-function findPath(origin: Coord, target: Coord) {
+
+function findPath(origin: Coord, target: Coord, minDistance: number) {
     let queue = Array<MazeResult>();
     let validpaths = Array<Array<Coord>>();
 
@@ -220,7 +221,8 @@ function findPath(origin: Coord, target: Coord) {
                 let newPath = path.slice(0);
                 newPath.push(newTarget);
 
-                if (validpaths.length > 0 && validpaths.sort(_p => _p.length)[0].length < newPath.length)
+                if ((validpaths.length > 0 && validpaths.sort(_p => _p.length)[0].length < newPath.length) || 
+                    (minDistance > 0 && newPath.length > minDistance))
                     continue;
 
                 // check if we are at end
