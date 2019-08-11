@@ -9,8 +9,8 @@ import { MazeResult, MazePoint } from "../MazeResult";
 // let filepath = path.join(__dirname, "../movement_input.txt");
 // let filepath = path.join(__dirname, "../basic_sample.txt");
 // let filepath = path.join(__dirname, "../combat_sample.txt");
-let filepath = path.join(__dirname, "../combat_sample05.txt");
-// let filepath = path.join(__dirname, "../day15_input.txt");
+// let filepath = path.join(__dirname, "../combat_sample05.txt");
+let filepath = path.join(__dirname, "../day15_input.txt");
 let lines = fs.readFileSync(filepath, "utf-8").split("\r\n");
 // let lines = fs.readFileSync(filepath, "utf-8").split("\n");
 
@@ -58,6 +58,13 @@ function sortByPosition(a:Coord, b:Coord) {
 function sortByArrayPosition(a: Array<Coord>, b: Array<Coord>) {
     if (a[1].coordY == b[1].coordY) return a[1].coordX - b[1].coordX;
     return a[1].coordY - b[1].coordY;
+}
+
+function sortByMazePoint(a: MazePoint, b: MazePoint) {
+    let aa = getNextStepMazePointResult(a);
+    let bb = getNextStepMazePointResult(b);
+    if (aa.coordY == bb.coordY) return aa.coordX - bb.coordX;
+    return aa.coordY - bb.coordY;
 }
 
 function getElementType (character: string) {
@@ -164,6 +171,8 @@ function move (player: Player) {
     player.EnemiesPositions = player.EnemiesPositions.sort(sortByPosition);
     for (let idx = 0; idx < player.EnemiesPositions.length; idx++) {
         let positionToCheck = player.EnemiesPositions[idx];
+        // let pointsToCheck = [player.position, positionToCheck].sort(sortByPosition);
+        // let foundPath = findBFSPath(player.position, positionToCheck);
         let foundPath = findBFSPath(player.position, positionToCheck);
         let tmpDistance = 0;
         if (foundPath) {            
@@ -232,54 +241,100 @@ function getNextStepMazePointResult(result: MazePoint) {
 
 let resultPath: Array<MazePoint>;
 let visistedMazePoints: Array<Coord>;
+let availablePaths: Array<MazePoint>;
 function findBFSPath(origin: Coord, target: Coord) {
     resultPath = new Array<MazePoint>();
     visistedMazePoints = new Array<Coord>();
-
+    availablePaths = new Array<MazePoint>();
     let tmpMazePoint = new MazePoint(origin, null);
     resultPath.push(tmpMazePoint);
+    let minLength = 0;
     while(resultPath.length > 0) {
         let currentPoint = resultPath.shift();
         if (currentPoint != undefined && 
             currentPoint.position.coordX == target.coordX && currentPoint.position.coordY == target.coordY) {
+                // if (availablePaths.length == 0) {
+                //     availablePaths.push(currentPoint);
+                //     minLength = getLengthMazePointResult(currentPoint);
+                // } else {
+                //     if (getLengthMazePointResult(currentPoint) <= minLength) {
+                //         availablePaths.push(currentPoint);
+                //     }
+                // }
                 return currentPoint;
         }
         if (currentPoint != undefined && 
             visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
-            // UP
-            let neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX - 1, currentPoint.position.coordY), currentPoint);
-            if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-                if(visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined){
-                    visistedMazePoints.push(currentPoint.position);
+            let neighbourMazePoint: MazePoint;
+            let xCord: Array<number>;
+            let yCord: Array<number>;
+            xCord = [-1, 0, 0, 1];
+            yCord = [0, -1, 1, 0];
+            // if (currentPoint.position.coordX <= target.coordX) {
+            //     if (currentPoint.position.coordY <= target.coordY) {
+            //         xCord = [1, 0, -1, 0];
+            //         yCord = [0, 1, 0, -1];
+            //     } else {
+            //         xCord = [0, 1, 0, -1];
+            //         yCord = [-1, 0, 1, 0];
+            //     }
+            // } else {
+            //     if (currentPoint.position.coordY <= target.coordY) {
+            //         xCord = [-1, 0, 0, 1];
+            //         yCord = [0, 1, -1, 0];
+            //     } else {
+            //         xCord = [0, -1, 0, 1];
+            //         yCord = [-1, 0, 1, 0]; 
+            //     }
+            // }
+            for (let idx = 0; idx < 4; idx++) {
+                neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX + xCord[idx], currentPoint.position.coordY + yCord[idx]), currentPoint);
+                if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
+                    if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
+                        visistedMazePoints.push(currentPoint.position);
+                    }
+                    resultPath.push(neighbourMazePoint);
                 }
-                resultPath.push(neighbourMazePoint);
             }
-            // LEFT
-            neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX, currentPoint.position.coordY - 1), currentPoint);
-            if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-                if(visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined){
-                    visistedMazePoints.push(currentPoint.position);
-                }
-                resultPath.push(neighbourMazePoint);
-            }
-            // RIGHT
-            neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX, currentPoint.position.coordY + 1), currentPoint);
-            if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-                if(visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined){
-                    visistedMazePoints.push(currentPoint.position);
-                }
-                resultPath.push(neighbourMazePoint);
-            }
-            // DOWN
-            neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX + 1, currentPoint.position.coordY), currentPoint);
-            if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-                if(visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined){
-                    visistedMazePoints.push(currentPoint.position);
-                }
-                resultPath.push(neighbourMazePoint);
-            }
+            // // RIGHT
+            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX + 1, currentPoint.position.coordY), currentPoint);
+            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
+            //     if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
+            //         visistedMazePoints.push(currentPoint.position);
+            //     }
+            //     resultPath.push(neighbourMazePoint);
+            // }
+            // // LEFT
+            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX - 1, currentPoint.position.coordY), currentPoint);
+            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
+            //     if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
+            //         visistedMazePoints.push(currentPoint.position);
+            //     }
+            //     resultPath.push(neighbourMazePoint);
+            // }
+            // // DOWN
+            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX, currentPoint.position.coordY + 1), currentPoint);
+            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
+            //     if(visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined){
+            //         visistedMazePoints.push(currentPoint.position);
+            //     }
+            //     resultPath.push(neighbourMazePoint);
+            // }
+            // // UP
+            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX, currentPoint.position.coordY - 1), currentPoint);
+            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
+            //     if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
+            //         visistedMazePoints.push(currentPoint.position);
+            //     }
+            //     resultPath.push(neighbourMazePoint);
+            // }
         }
     }
+    // if (availablePaths.length > 0){
+    //     availablePaths = availablePaths.sort(sortByMazePoint);
+    //     return availablePaths.shift();
+
+    // }
     return null;
 }
 
@@ -351,9 +406,9 @@ function attack (attacker: Player, target: Player) {
         target.isAlive = false;
 
     }
-    // console.log(`${target.display()} [${target.position.coordX}, ${target.position.coordY}] attacked by ` + 
-    // `${attacker.display()} [${attacker.position.coordX}, ${attacker.position.coordY}]. ` +
-    // `Damaged with ${attacker.AP} points. Current health: ${target.HP}.`)
+    console.log(`${target.display()} [${target.position.coordX}, ${target.position.coordY}] attacked by ` + 
+    `${attacker.display()} [${attacker.position.coordX}, ${attacker.position.coordY}]. ` +
+    `Damaged with ${attacker.AP} points. Current health: ${target.HP}.`)
     if (target.HP == 0) {
         let targetPosition = mapPositions.find(_p => _p.coordX == target.position.coordX && _p.coordY == target.position.coordY);
         if (targetPosition != undefined) {
@@ -446,6 +501,8 @@ displayCaveMap(caveMap);
 let roundNumber = 0;
 do {
     let takenActions = 0;
+    roundNumber++;
+    console.log(`Start of round ${roundNumber}.`);
     for (let player of playerCollection) {
         if (player.isAlive && AreEnemiesLeft(player)) {
             player.EnemiesPositions = findAvailableEnemyPositions(player).sort(sortByPosition); 
@@ -457,7 +514,6 @@ do {
     // if (takenActions == playerCollection.length) {
     //     roundNumber++;
     // }
-    roundNumber++;
     console.log(`End of round ${roundNumber}.`);
     playerCollection = playerCollection.filter(_p => _p.isAlive).sort(sortPlayerByPosition);
 
