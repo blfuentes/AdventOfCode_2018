@@ -9,3 +9,13 @@ export class MazeResult {
         this.path = _path;
     }
 }
+
+export class MazePoint {
+    position: Coord;
+    parent?: MazePoint | null;
+
+    constructor (_position: Coord, _parent: MazePoint | null) {
+        this.position = _position;
+        this.parent = _parent;
+    }
+}
