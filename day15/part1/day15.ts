@@ -162,7 +162,6 @@ function isValid(visited: Array<Coord>, position: Coord)
     return false;
 }
 
-// let correctPath: Array<Coord> = [];
 function move (player: Player) {
     let coordToMove: Coord = new Coord(0, 0);
     let minDistance = 0;
@@ -170,8 +169,6 @@ function move (player: Player) {
     player.EnemiesPositions = player.EnemiesPositions.sort(sortByPosition);
     for (let idx = 0; idx < player.EnemiesPositions.length; idx++) {
         let positionToCheck = player.EnemiesPositions[idx];
-        // let pointsToCheck = [player.position, positionToCheck].sort(sortByPosition);
-        // let foundPath = findBFSPath(player.position, positionToCheck);
         let foundPath = findBFSPath(player.position, positionToCheck);
         let tmpDistance = 0;
         if (foundPath) {            
@@ -225,27 +222,16 @@ function getNextStepMazePointResult(result: MazePoint) {
 
 let resultPath: Array<MazePoint>;
 let visistedMazePoints: Array<Coord>;
-let availablePaths: Array<MazePoint>;
 function findBFSPath(origin: Coord, target: Coord) {
     resultPath = new Array<MazePoint>();
     visistedMazePoints = new Array<Coord>();
     availablePaths = new Array<MazePoint>();
     let tmpMazePoint = new MazePoint(origin, null);
     resultPath.push(tmpMazePoint);
-    let minLength = 0;
     while(resultPath.length > 0) {
         let currentPoint = resultPath.shift();
         if (currentPoint != undefined && 
             currentPoint.position.isEqual(target)) {
-                // if (availablePaths.length == 0) {
-                //     availablePaths.push(currentPoint);
-                //     minLength = getLengthMazePointResult(currentPoint);
-                // } else {
-                //     if (getLengthMazePointResult(currentPoint) <= minLength) {
-                //         availablePaths.push(currentPoint);
-                //     }
-                // }
-                // availablePaths.push(currentPoint);
                 return currentPoint;
         }
         if (currentPoint != undefined && 
@@ -266,10 +252,7 @@ function findBFSPath(origin: Coord, target: Coord) {
             }
         }
     }
-    // if (availablePaths.length > 0){
-    //     availablePaths = availablePaths.sort(sortByMazePoint);
-    //     return availablePaths.shift();
-    // }
+
     return null;
 }
 
@@ -435,7 +418,6 @@ for (let line of lines) {
 displayCaveMap(caveMap);
 let roundNumber = 0;
 do {
-    let takenActions = 0;
     roundNumber++;
     console.log(`Start of round ${roundNumber}.`);
     for (let player of playerCollection) {
@@ -446,15 +428,10 @@ do {
         }
     }
     displayCaveMap(caveMap);    
-    // if (takenActions == playerCollection.length) {
-    //     roundNumber++;
-    // }
     console.log(`End of round ${roundNumber}.`);
     playerCollection = playerCollection.filter(_p => _p.isAlive).sort(sortPlayerByPosition);
 
 } while (elfCollection.find(_e => _e.isAlive) && goblinCollection.find(_g => _g.isAlive))
-// while (playerCollection.filter(_p => _p.isAlive && _p.elementType == ElementType.GOBLIN).length > 0 && 
-//             playerCollection.filter(_p => _p.isAlive && _p.elementType == ElementType.ELF).length > 0 );
 let health = playerCollection.map(_p => _p.HP)
 .reduce((prev, curr) => prev + curr, 0)
 let score = health * (--roundNumber);
