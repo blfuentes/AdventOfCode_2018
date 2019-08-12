@@ -12,4 +12,7 @@ export class Coord {
         this.coordY = ypos;
         this.distance = 0;
     }
+    isEqual(target: Coord | undefined) {
+        return target != undefined && this.coordX == target.coordX && this.coordY == target.coordY;
+    }
 }

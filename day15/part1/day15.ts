@@ -146,21 +146,20 @@ function findAvailableEnemyPositions(player: Player) {
 
 function isValid(visited: Array<Coord>, position: Coord)
 {
-    let checkPosition = mapPositions.find(_p => _p.coordX == position.coordX &&
-                                                _p.coordY == position.coordY);
-    let isVisited = false;
-    for (var j = 0; j < visited.length; j ++) {
-        if ((visited[j].coordX == position.coordX && visited[j].coordY == position.coordY)) {
-            isVisited = true;
-            break;
+    let checkPosition = mapPositions.find(_p => _p.isEqual(position));
+    if ((position.coordY >= 0) && 
+        (position.coordY < lines.length) &&
+        (position.coordX >= 0) &&
+        (position.coordX < lines[0].length) &&
+        (checkPosition != undefined && checkPosition.element.elementType == ElementType.FIELD)) {
+        for (var j = 0; j < visited.length; j++) {
+            if (visited[j].isEqual(position)) {
+                return false;
+            }
         }
+        return true;
     }
-    return (position.coordY >= 0) && 
-            (position.coordY < lines.length) && 
-            (position.coordX >= 0) && 
-            (position.coordX < lines[0].length) && 
-            (checkPosition != undefined && checkPosition.element.elementType == ElementType.FIELD) && 
-            !isVisited;
+    return false;
 }
 
 // let correctPath: Array<Coord> = [];
@@ -192,24 +191,9 @@ function move (player: Player) {
             }
         }
     }
-    // for (let idx = 0; idx < player.EnemiesPositions.length; idx++) {
-    //     let positionToCheck = player.EnemiesPositions[idx];
-    //     let foundPath = findPath(player.position, positionToCheck, minDistance);
-    //     let tmpDistance = 0;
-    //     if (foundPath) {            
-    //         tmpDistance = foundPath.length;
-    //         if (idx == 0 || !doMove) {
-    //             doMove = true;
-    //             minDistance = foundPath.length;
-    //             coordToMove = foundPath[1];
-    //         } else if (tmpDistance < minDistance) {
-    //             minDistance = tmpDistance;
-    //             coordToMove = foundPath[1];
-    //         }
-    //     }
-    // }
+
     if (doMove && coordToMove != undefined) {
-        let newPosition = mapPositions.find(_p => _p.coordX == coordToMove.coordX && _p.coordY == coordToMove.coordY);
+        let newPosition = mapPositions.find(_p => _p.isEqual(coordToMove));
         if (newPosition != undefined) {
             player.NextPosition = newPosition;
         }        
@@ -252,7 +236,7 @@ function findBFSPath(origin: Coord, target: Coord) {
     while(resultPath.length > 0) {
         let currentPoint = resultPath.shift();
         if (currentPoint != undefined && 
-            currentPoint.position.coordX == target.coordX && currentPoint.position.coordY == target.coordY) {
+            currentPoint.position.isEqual(target)) {
                 // if (availablePaths.length == 0) {
                 //     availablePaths.push(currentPoint);
                 //     minLength = getLengthMazePointResult(currentPoint);
@@ -261,79 +245,30 @@ function findBFSPath(origin: Coord, target: Coord) {
                 //         availablePaths.push(currentPoint);
                 //     }
                 // }
+                // availablePaths.push(currentPoint);
                 return currentPoint;
         }
         if (currentPoint != undefined && 
-            visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
+            visistedMazePoints.find(_v => _v.isEqual(currentPoint.position)) == undefined) {
             let neighbourMazePoint: MazePoint;
             let xCord: Array<number>;
             let yCord: Array<number>;
-            xCord = [-1, 0, 0, 1];
-            yCord = [0, -1, 1, 0];
-            // if (currentPoint.position.coordX <= target.coordX) {
-            //     if (currentPoint.position.coordY <= target.coordY) {
-            //         xCord = [1, 0, -1, 0];
-            //         yCord = [0, 1, 0, -1];
-            //     } else {
-            //         xCord = [0, 1, 0, -1];
-            //         yCord = [-1, 0, 1, 0];
-            //     }
-            // } else {
-            //     if (currentPoint.position.coordY <= target.coordY) {
-            //         xCord = [-1, 0, 0, 1];
-            //         yCord = [0, 1, -1, 0];
-            //     } else {
-            //         xCord = [0, -1, 0, 1];
-            //         yCord = [-1, 0, 1, 0]; 
-            //     }
-            // }
+            xCord = [0, -1, 1, 0];
+            yCord = [-1, 0, 0, 1];
             for (let idx = 0; idx < 4; idx++) {
                 neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX + xCord[idx], currentPoint.position.coordY + yCord[idx]), currentPoint);
                 if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-                    if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
+                    if (visistedMazePoints.find(_v => _v.isEqual(currentPoint.position)) == undefined) {
                         visistedMazePoints.push(currentPoint.position);
                     }
                     resultPath.push(neighbourMazePoint);
                 }
             }
-            // // RIGHT
-            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX + 1, currentPoint.position.coordY), currentPoint);
-            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-            //     if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
-            //         visistedMazePoints.push(currentPoint.position);
-            //     }
-            //     resultPath.push(neighbourMazePoint);
-            // }
-            // // LEFT
-            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX - 1, currentPoint.position.coordY), currentPoint);
-            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-            //     if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
-            //         visistedMazePoints.push(currentPoint.position);
-            //     }
-            //     resultPath.push(neighbourMazePoint);
-            // }
-            // // DOWN
-            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX, currentPoint.position.coordY + 1), currentPoint);
-            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-            //     if(visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined){
-            //         visistedMazePoints.push(currentPoint.position);
-            //     }
-            //     resultPath.push(neighbourMazePoint);
-            // }
-            // // UP
-            // neighbourMazePoint = new MazePoint(new Coord(currentPoint.position.coordX, currentPoint.position.coordY - 1), currentPoint);
-            // if (isValid(visistedMazePoints, neighbourMazePoint.position)) {
-            //     if (visistedMazePoints.find(_v => _v.coordX == currentPoint.position.coordX && _v.coordY == currentPoint.position.coordY) == undefined) {
-            //         visistedMazePoints.push(currentPoint.position);
-            //     }
-            //     resultPath.push(neighbourMazePoint);
-            // }
         }
     }
     // if (availablePaths.length > 0){
     //     availablePaths = availablePaths.sort(sortByMazePoint);
     //     return availablePaths.shift();
-
     // }
     return null;
 }
@@ -410,7 +345,7 @@ function attack (attacker: Player, target: Player) {
     `${attacker.display()} [${attacker.position.coordX}, ${attacker.position.coordY}]. ` +
     `Damaged with ${attacker.AP} points. Current health: ${target.HP}.`)
     if (target.HP == 0) {
-        let targetPosition = mapPositions.find(_p => _p.coordX == target.position.coordX && _p.coordY == target.position.coordY);
+        let targetPosition = mapPositions.find(_p => _p.isEqual(target.position));
         if (targetPosition != undefined) {
             target.elementType = ElementType.FIELD;
             targetPosition.element = new Field(target.position);
@@ -436,8 +371,8 @@ function round(player: Player) {
 
 function takeNewPlace(player: Player) {
     if(player.NextPosition != undefined) {
-        let newPosition = mapPositions.find(_p => _p.coordX == player.NextPosition.coordX && _p.coordY == player.NextPosition.coordY);
-        let oldPosition = mapPositions.find(_p => _p.coordX == player.position.coordX && _p.coordY == player.position.coordY);
+        let newPosition = mapPositions.find(_p => _p.isEqual(player.NextPosition));
+        let oldPosition = mapPositions.find(_p => _p.isEqual(player.position));
         if (oldPosition != undefined && newPosition != undefined) {
             oldPosition.isFree = true;
             oldPosition.element = new Field(new Coord(oldPosition.coordX, oldPosition.coordY));
