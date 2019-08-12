@@ -225,7 +225,6 @@ let visistedMazePoints: Array<Coord>;
 function findBFSPath(origin: Coord, target: Coord) {
     resultPath = new Array<MazePoint>();
     visistedMazePoints = new Array<Coord>();
-    availablePaths = new Array<MazePoint>();
     let tmpMazePoint = new MazePoint(origin, null);
     resultPath.push(tmpMazePoint);
     while(resultPath.length > 0) {
@@ -254,66 +253,6 @@ function findBFSPath(origin: Coord, target: Coord) {
     }
 
     return null;
-}
-
-
-function findPath(origin: Coord, target: Coord, minDistance: number) {
-    let queue = Array<MazeResult>();
-    let validpaths = Array<Array<Coord>>();
-
-    // New points, where we did not check the surroundings:
-    // remember the position and how we got there
-    // initially our starting point and a path containing only this point
-    let tmpElement = new MazeResult(origin, [origin]);
-    queue.push(tmpElement);
-    let found = false;
-    while (queue.length > 0 && !found) {
-        // get next position to check viable directions
-        let pointToReach = queue.shift();
-        let position = new Coord(0, 0);
-        let path = new Array<Coord>();
-        if(pointToReach != undefined){
-            position = pointToReach.position;
-            path = pointToReach.path;
-        } 
-        // all points in each direction
-        let direction = [ 
-                            [ position.coordX, position.coordY - 1 ],
-                            [ position.coordX, position.coordY + 1 ],
-                            [ position.coordX - 1, position.coordY ],
-                            [ position.coordX + 1, position.coordY ]
-                        ];
-        for(var i = 0; i < direction.length; i++) { 
-            let newTarget = new Coord(direction[i][0], direction[i][1]);
-            if (isValid(path, newTarget)) {
-                //
-                let newPath = path.slice(0);
-                newPath.push(newTarget);
-
-                if ((validpaths.length > 0 && validpaths.sort(_p => _p.length)[0].length < newPath.length) || 
-                    (minDistance > 0 && newPath.length > minDistance))
-                    continue;
-
-                // check if we are at end
-                if (newTarget.coordX != target.coordX || newTarget.coordY != target.coordY) {
-                    // remember position and the path to it
-                    tmpElement = new MazeResult(newTarget, newPath);                    
-                    queue.push(tmpElement);
-                } else {
-                    // remember this path from start to end
-                    validpaths.push(newPath);
-                    // break here if you want only one shortest path
-                    found = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    validpaths = validpaths.sort(sortByArrayPosition);
-    let result = validpaths.shift();
-
-    return result;
 }
 
 function attack (attacker: Player, target: Player) {
@@ -369,6 +308,11 @@ function takeNewPlace(player: Player) {
     }
 }
 
+function resurrectPlayers() {
+
+} 
+
+function initGame(){
 // READ MAP
 let rowIdx = 0;
 let cCard = 0;
@@ -414,6 +358,9 @@ for (let line of lines) {
 
  // sort units
  playerCollection = playerCollection.sort(sortPlayerByPosition);
+}
+
+initGame();
 
 displayCaveMap(caveMap);
 let roundNumber = 0;
@@ -424,7 +371,6 @@ do {
         if (player.isAlive && AreEnemiesLeft(player)) {
             player.EnemiesPositions = findAvailableEnemyPositions(player).sort(sortByPosition); 
             round(player);
-            takenActions++;
         }
     }
     displayCaveMap(caveMap);    
@@ -432,7 +378,11 @@ do {
     playerCollection = playerCollection.filter(_p => _p.isAlive).sort(sortPlayerByPosition);
 
 } while (elfCollection.find(_e => _e.isAlive) && goblinCollection.find(_g => _g.isAlive))
+
+//
 let health = playerCollection.map(_p => _p.HP)
-.reduce((prev, curr) => prev + curr, 0)
+                .reduce((prev, curr) => prev + curr, 0)
 let score = health * (--roundNumber);
+
+//
 console.log(`finished! Score: ${score} (health: ${health})`);
